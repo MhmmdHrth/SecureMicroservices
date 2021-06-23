@@ -44,8 +44,13 @@ namespace Movies.API
                         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                         {
                             ValidateAudience = false
-                        }; 
+                        };
                     });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientPolicy", policy => policy.RequireClaim("client_id", "movieClient"));
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
