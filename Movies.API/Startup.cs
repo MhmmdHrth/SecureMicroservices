@@ -36,6 +36,16 @@ namespace Movies.API
 
             services.AddDbContext<MoviesAPIContext>(options =>
                     options.UseInMemoryDatabase("MoviesAPIContext"));
+
+            services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "https://localhost:5005";
+                        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        }; 
+                    });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -51,6 +61,7 @@ namespace Movies.API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
