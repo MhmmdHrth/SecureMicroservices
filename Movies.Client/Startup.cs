@@ -42,7 +42,7 @@ namespace Movies.Client
                     options.ClientSecret = "secret";
                     options.ResponseType = "code"; //grant_type options
 
-                    options.Scope.Add("openId");
+                    options.Scope.Add("openid");
                     options.Scope.Add("profile");
 
                     options.SaveTokens = true;
