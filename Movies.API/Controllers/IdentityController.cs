@@ -22,7 +22,7 @@ namespace Movies.API.Controllers
                 x.Value
             });
 
-            return Ok(data);
+            return new JsonResult(data);
         }
     }
 }
