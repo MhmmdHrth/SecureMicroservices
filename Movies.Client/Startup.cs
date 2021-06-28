@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Movies.Client.ApiServices;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Net.Http.Headers;
+using Movies.Client.HttpHandlers;
 
 namespace Movies.Client
 {
@@ -49,6 +51,15 @@ namespace Movies.Client
 
                     options.GetClaimsFromUserInfoEndpoint = true;
                 });
+
+
+            services.AddTransient<AuthenticationDelegatinHandler>();
+            services.AddHttpClient("MovieAPIClient", options =>
+            {
+                options.BaseAddress = new Uri("https://localhost:5001");
+                options.DefaultRequestHeaders.Clear();
+                options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            }).AddHttpMessageHandler<AuthenticationDelegatinHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

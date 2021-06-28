@@ -11,6 +11,14 @@ namespace Movies.Client.ApiServices
 {
     public class MovieApiService : IMovieApiService
     {
+        private readonly HttpClient httpClient;
+
+        public MovieApiService(IHttpClientFactory httpClientFactory)
+        {
+            IHttpClientFactory _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
+        }
+
         public Task<Movie> CreateMovie(Movie movie)
         {
             throw new NotImplementedException();
@@ -28,45 +36,12 @@ namespace Movies.Client.ApiServices
 
         public async Task<IEnumerable<Movie>> GetMovies()
         {
-            //1. "retrieve" our api credentials. This must be registered on IS
-            var apiClientCredentials = new ClientCredentialsTokenRequest
-            {
-                Address = "https://localhost:5005/connect/token",
-
-                ClientId = "movieClient",
-                ClientSecret = "secret",
-
-                Scope = "movieAPI"
-            };
-
-            //creates a new HttpClient to talk to our IS
-            var client = new HttpClient();
-
-            //just checks if we can reach the Discovery document
-            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5005");
-            if(disco.IsError) 
-                return null;
-
-            //2. Authenticates and get an access token from IS
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(apiClientCredentials);
-            if (tokenResponse.IsError)
-                return null;
-
-            //3. Send request to protected API
-            //another client for talking with protected API
-            var apiClient = new HttpClient();
-
-            //4. Set the access_token in the request authorization: Bearer <Token>
-            apiClient.SetBearerToken(tokenResponse.AccessToken);
-
-            //5. Send a request to our protected API
-            var response = await apiClient.GetAsync("https://localhost:5001/api/movies");
-            response.EnsureSuccessStatusCode();
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/movies/");
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
             var content = await response.Content.ReadAsStringAsync();
+            var movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
 
-            //6. Deserialize obj to movielist
-            List<Movie> movieList = JsonConvert.DeserializeObject<List<Movie>>(content);
             return movieList;
         }
 
