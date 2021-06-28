@@ -23,7 +23,8 @@ namespace IdentityServer
                     {
                         new Secret("secret".Sha256())
                     },
-                    AllowedScopes = {"movieAPI"}
+                    AllowedScopes = {"movieAPI"},
+                    
                 },
                 new Client
                 {
@@ -46,7 +47,7 @@ namespace IdentityServer
                     AllowedScopes = new List<string>()
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
                     }
                 }
             };
