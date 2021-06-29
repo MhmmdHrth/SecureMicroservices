@@ -43,18 +43,44 @@ namespace Movies.Client
 
                     options.ClientId = "movies_mvc_client";
                     options.ClientSecret = "secret";
-                    options.ResponseType = "code"; //grant_type options
+                    options.ResponseType = "code id_token"; //grant_type options
 
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
+                    options.Scope.Add("movieAPI");
 
                     options.SaveTokens = true;
 
                     options.GetClaimsFromUserInfoEndpoint = true;
                 });
 
+            //AUTHORIZATION FLOW
+            //1.create httpclient used for accessing Movies.API
+            //services.AddTransient<AuthenticationDelegatinHandler>();
+            //services.AddHttpClient("MovieAPIClient", options =>
+            //{
+            //    options.BaseAddress = new Uri("https://localhost:5001/");
+            //    options.DefaultRequestHeaders.Clear();
+            //    options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            //}).AddHttpMessageHandler<AuthenticationDelegatinHandler>();
 
-            // create httpclient used for accessing Movies.API
+            ////2.create httpclient used for accessing Identity Server Provider
+            //services.AddHttpClient("IDPClient", options =>
+            //{
+            //    options.BaseAddress = new Uri("https://localhost:5005/");
+            //    options.DefaultRequestHeaders.Clear();
+            //    options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            //});
+
+            //services.AddSingleton(new ClientCredentialsTokenRequest
+            //{
+            //    Address = "https://localhost:5005/connect/token",
+            //    ClientId = "movieClient",
+            //    ClientSecret = "secret",
+            //    Scope = "movieAPI"
+            //});
+
+            //HYBRID FLOW
             services.AddTransient<AuthenticationDelegatinHandler>();
             services.AddHttpClient("MovieAPIClient", options =>
             {
@@ -63,22 +89,7 @@ namespace Movies.Client
                 options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             }).AddHttpMessageHandler<AuthenticationDelegatinHandler>();
 
-            // create httpclient used for accessing Identity Server Provider
-            services.AddHttpClient("IDPClient", options =>
-            {
-                options.BaseAddress = new Uri("https://localhost:5005/");
-                options.DefaultRequestHeaders.Clear();
-                options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            });
-
-            services.AddSingleton(new ClientCredentialsTokenRequest
-            {
-                Address = "https://localhost:5005/connect/token",
-                ClientId = "movieClient",
-                ClientSecret = "secret",
-                Scope = "movieAPI"
-            });
-
+            services.AddHttpContextAccessor();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
