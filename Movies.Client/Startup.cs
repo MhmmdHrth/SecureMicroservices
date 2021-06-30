@@ -104,6 +104,13 @@ namespace Movies.Client
                 options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             }).AddHttpMessageHandler<AuthenticationDelegatinHandler>();
 
+            services.AddHttpClient("IDPClient", options =>
+            {
+                options.BaseAddress = new Uri("https://localhost:5005/");
+                options.DefaultRequestHeaders.Clear();
+                options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            });
+
             services.AddHttpContextAccessor();
         }
 

@@ -22,6 +22,13 @@ namespace Movies.Client.Controllers
             this.movieApiService = movieApiService ?? throw new ArgumentNullException(nameof(movieApiService));
         }
 
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> OnlyAdmin()
+        {
+            var userInfo = await movieApiService.GetUserInfo();
+            return View(userInfo);
+        }
+
         public async Task LogTokenAndClaims()
         {
             var identityToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken);

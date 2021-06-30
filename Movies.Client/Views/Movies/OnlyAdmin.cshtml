@@ -1,0 +1,29 @@
+﻿@model UserInfoVM
+
+<h1>Only Admin</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Claim Type
+            </th>
+            <th>
+                Claim Value
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.UserInforDictionary)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(x => item.Key)
+            </td>
+            <td>
+                @Html.DisplayFor(x => item.Value)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

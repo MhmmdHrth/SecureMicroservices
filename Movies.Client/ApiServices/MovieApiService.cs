@@ -1,4 +1,7 @@
 ﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Movies.Client.Models;
 using Newtonsoft.Json;
 using System;
@@ -12,11 +15,47 @@ namespace Movies.Client.ApiServices
     public class MovieApiService : IMovieApiService
     {
         private readonly HttpClient httpClient;
+        private readonly HttpClient httpClientIS4;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
-        public MovieApiService(IHttpClientFactory httpClientFactory)
+        public MovieApiService(IHttpClientFactory httpClientFactory, IHttpClientFactory httpClientFactoryIS4 ,IHttpContextAccessor httpContextAccessor)
         {
             IHttpClientFactory _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
+
+            IHttpClientFactory _httpClientFactoryIS4 = httpClientFactoryIS4 ?? throw new ArgumentNullException(nameof(httpClientFactoryIS4));
+            this.httpClientIS4 = _httpClientFactoryIS4.CreateClient("IDPClient");
+
+            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        }
+
+        public async Task<UserInfoVM> GetUserInfo()
+        {
+            var metaDataResponse = await httpClientIS4.GetDiscoveryDocumentAsync();
+            if (metaDataResponse.IsError)
+            {
+                throw new HttpRequestException("Something went wrong while requesting the access token");
+            }
+
+            var accessToken = await httpContextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+            var userInfoResponse = await httpClientIS4.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = metaDataResponse.UserInfoEndpoint,
+                Token = accessToken
+            });
+
+            if (userInfoResponse.IsError)
+            {
+                throw new HttpRequestException("Something went wrong while requesting user info");
+            }
+
+            var userInfoDictionary = new Dictionary<string, string>();
+            foreach(var claim in userInfoResponse.Claims)
+            {
+                userInfoDictionary.Add(claim.Type, claim.Value);
+            }
+
+            return new UserInfoVM(userInfoDictionary);
         }
 
         public Task<Movie> CreateMovie(Movie movie)
