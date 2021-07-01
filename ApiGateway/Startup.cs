@@ -34,11 +34,6 @@ namespace ApiGateway
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
             await app.UseOcelot();
         }
     }

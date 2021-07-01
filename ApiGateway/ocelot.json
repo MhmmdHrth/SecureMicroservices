@@ -14,12 +14,13 @@
       "UpstreamHttpMethod": [
         "GET",
         "POST",
-        "PUT"
+        "PUT",
+        "DELETE"
       ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "IdentityApiKey",
-        "AllowedScopes": []
-      }
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "IdentityApiKey",
+      //  "AllowedScopes": []
+      //}
     }
   ]
 }

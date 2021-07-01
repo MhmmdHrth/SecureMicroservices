@@ -99,7 +99,7 @@ namespace Movies.Client
             services.AddTransient<AuthenticationDelegatinHandler>();
             services.AddHttpClient("MovieAPIClient", options =>
             {
-                options.BaseAddress = new Uri("https://localhost:5001/");
+                options.BaseAddress = new Uri("https://localhost:5010/");
                 options.DefaultRequestHeaders.Clear();
                 options.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             }).AddHttpMessageHandler<AuthenticationDelegatinHandler>();
